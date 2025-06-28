@@ -189,7 +189,7 @@ The context file `cxt.json` is an array of dialog turns:
     "assistant": "Here's an example implementation using NumPy..."
   }
 ]
-
+```
 
 
 ## Conclusion
