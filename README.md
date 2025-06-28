@@ -143,6 +143,55 @@ This format is suitable for instruction-tuned language models.
 
 ---
 
+## Part 2: Chat Routing and Context-Aware Response Generation
+
+### Objective
+
+This component builds a conversational loop that dynamically routes user queries to the best-performing language model based on predicted category, while preserving conversation context across all models.
+
+### Workflow Overview
+
+1. **User Input**: Accept a query from the user via command-line or future UI.
+2. **Query Classification**: 
+   - The query is passed to the fine-tuned `Llama-3.2-1B` classifier.
+   - Output label is one of: `coding`, `chat`, `summary`, or `math`.
+3. **Model Selection**:
+   - Based on the label, the system selects the appropriate expert model:
+     - Coding → CodeLlama
+     - Chat → Mistral
+     - Summary → LLaMA 3.1
+     - Math → Llemma
+4. **Context Construction**:
+   - A `cxt.json` file stores previous user and model messages as structured history.
+   - Before generating a response, the system rebuilds a full prompt from this history.
+   - If the combined prompt exceeds the model’s token limit (e.g., 4096 tokens), oldest messages are truncated.
+5. **Response Generation**:
+   - The chosen model is called with the constructed context and user query.
+   - A response is generated and printed to the user.
+6. **Postprocessing**:
+   - Stopwords are removed using NLTK for cleaner storage.
+   - The cleaned response is appended to `cxt.json` for continuity.
+7. **Loop**:
+   - The session continues until the user exits with a quit command.
+
+### Context Format
+
+The context file `cxt.json` is an array of dialog turns:
+
+```json
+[
+  {
+    "user": "What is a gradient descent?",
+    "assistant": "Gradient descent is an optimization algorithm..."
+  },
+  {
+    "user": "How do I write it in Python?",
+    "assistant": "Here's an example implementation using NumPy..."
+  }
+]
+
+
+
 ## Conclusion
 
 This repository demonstrates the feasibility of:
