@@ -97,3 +97,65 @@ The pipeline involves fine-tuning `Llama-3.2-1B` using LoRA (Low-Rank Adaptation
 
 Each sample was transformed into an instruction-response format:
 
+Instruction: classify the following query into one of the following types: conversation, code, math, summary
+query: {query}
+Response: {class}
+
+
+
+This format is suitable for instruction-tuned language models.
+
+#### 3. Model Setup
+
+- Loaded `Llama-3.2-1B` and tokenizer from Hugging Face
+- Applied LoRA adapters to `q_proj` and `v_proj` layers using PEFT
+- Wrapped the model with LoRA for efficient training
+
+#### 4. Tokenization and Training
+
+- Applied tokenization with padding, truncation, and max length 256
+- Training configuration:
+  - Small batch size
+  - Gradient accumulation
+  - 10 epochs
+
+#### 5. Saving and Loading
+
+- Saved the tuned model and tokenizer
+- For evaluation, loaded both the base model and LoRA-merged model in inference mode
+
+#### 6. Evaluation: Perplexity
+
+- Base Model: 1710.39 (very high; indicates failure)
+- Tuned Model: 2.15 (indicates the model learned the task well)
+
+#### 7. Evaluation: Classification Accuracy
+
+- Ran 100 test queries through both models
+- Base Model:
+  - Accuracy: 0%
+  - F1-score: 0
+- Tuned Model:
+  - Accuracy: 77%
+  - High precision/recall for "coding" and "conversation"
+  - Moderate performance for "math"
+  - Lower recall for "summary"
+
+---
+
+## Conclusion
+
+This repository demonstrates the feasibility of:
+
+- Efficiently classifying user queries using lightweight fine-tuning (LoRA)
+- Selecting suitable LLMs dynamically for response generation
+- Building context-aware conversational agents that maintain continuity across models
+- Extending to multimodal interaction via planned visual input support
+
+---
+
+## Next Steps
+
+- Develop a user-facing frontend interface
+- Expand multimodal support (image captioning, OCR, audio-to-text)
+- Optimize memory and inference using quantization (e.g., 4-bit, GGUF)
